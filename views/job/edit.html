@@ -1,0 +1,99 @@
+{[render "layouts/header.html"]}
+<style>
+    #file {
+        width: 0;
+        height: 0;
+    }
+</style>
+<div class="mdui-container mdui-typo mdui-m-t-2" id="app">
+    <div class="mdui-card">
+        <div class="mdui-card-content">
+            <h2 class="mdui-m-t-0"># 作业要求</h2>
+            <div>
+                <h3># 标题</h3>
+                <div class="mdui-m-t-2">
+                    {{job.task.name}}
+                </div>
+            </div>
+            <div class="mdui-m-t-2">
+                <h3># 内容</h3>
+                <div class="mdui-m-t-2">
+                    {{job.task.content}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mdui-card mdui-m-t-2">
+        <div class="mdui-card-content">
+            <h2 class="mdui-m-t-0">我的提交</h2>
+            <div class="file">
+                <p class="mdui-text-truncate">
+                    {{job.filename}}
+                </p>
+                <input class="mdui-invisible" type="file" accept="*/*" id="file" @change="selectFile"
+                       multiple="multiple">
+                <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent"
+                        @click='document.getElementById("file").click()'>选择文件
+                </button>
+                <button v-if="job.filename" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent"
+                        @click="download(job.user_id,job.filepath)">下载文件
+                </button>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">备注</label>
+                <textarea class="mdui-textfield-input" v-model="job.content"></textarea>
+            </div>
+            <div class="mdui-m-t-2">
+                <button :disabled="loading" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent"
+                        @click="submit">保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            job: {},
+            file: null,
+            loading: false,
+        },
+        created() {
+            this.getJob('{[.taskId]}')
+        },
+        methods: {
+            getJob(taskId) {
+                httpGet("job?task_id=" + taskId).then(res => {
+                    if (res.status === "ok") {
+                        this.job = res.data
+                    }
+                })
+            },
+            selectFile(e) {
+                let file = e.target.files[0]
+                if (file) {
+                    this.job.filename = file.name
+                    this.file = file
+                }
+            },
+            submit() {
+                this.loading = true
+                let formdata = new FormData();
+                formdata.append("id", this.job.id)
+                formdata.append("content", this.job.content)
+                formdata.append("filename", this.job.filename)
+                formdata.append("file", this.file)
+                httpPut("job", formdata).finally(() => {
+                    this.loading = false
+                    setTimeout(() => {
+                        window.location.href = "/job"
+                    })
+                })
+            }
+
+        }
+    })
+</script>

@@ -1,0 +1,68 @@
+{[render "layouts/header_admin.html"]}
+<div class="mdui-container mdui-m-t-2" id="app">
+    <div class="mdui-table-fluid">
+        <div class="mdui-m-y-1 mdui-float-right mdui-m-r-1">
+            <a href="/admin/task/create" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent">发布新任务</a>
+        </div>
+        <table class="mdui-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>作业标题</th>
+                <th>发布时间</th>
+                <th>截止时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="task in tasks">
+                <td>{{ task.id }}</td>
+                <td>{{ task.name }}</td>
+                <td>{{ task.created_at }}</td>
+                <td>{{ task.deadline }}</td>
+                <td>
+                    <a :href="'/admin/task/edit/'+task.id"
+                       class="mdui-fab mdui-fab-mini mdui-color-theme-accent mdui-ripple">
+                        <i class="mdui-icon material-icons">mode_edit</i>
+                    </a>
+                    <button @click="deleteTask(task.id)"
+                            class="mdui-fab mdui-fab-mini mdui-color-theme-accent mdui-ripple">
+                        <i class="mdui-icon material-icons">clear</i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            tasks: [],
+            activeTask: 0,
+        },
+        created() {
+            this.getTasks()
+        },
+        methods: {
+            getTasks() {
+                return httpGet("master/tasks").then(res => {
+                    if (res.status === "ok") {
+                        this.tasks = res.data
+                    }
+                })
+            },
+            deleteTask(id) {
+                return httpDelete("master/task", {
+                    id: id
+                }).then(res => {
+                    if (res.status === "ok") {
+                        this.getTasks()
+                    }
+                })
+            }
+        }
+    })
+</script>

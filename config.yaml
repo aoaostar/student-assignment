@@ -1,0 +1,12 @@
+app_name: 学生作业提交系统 # 应用名称
+debug: true # 是否启用debug
+listen: 0.0.0.0:8080 # 监听地址
+static: dist # 静态文件目录
+upload_size: 30
+database:
+  host: 127.0.0.1
+  port: 3306
+  name: StudentJobs
+  table_prefix: aoaostar_
+  username: root
+  password: root

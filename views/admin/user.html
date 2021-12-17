@@ -1,0 +1,61 @@
+{[render "layouts/header_admin.html"]}
+<div class="mdui-container mdui-m-t-2" id="app">
+    <div class="mdui-table-fluid">
+        <table class="mdui-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>姓名</th>
+                <th>班级</th>
+                <th>注册时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="user in users">
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.class.name }}</td>
+                <td>{{ user.created_at }}</td>
+                <td>
+                    <button @click="deleteUser(user.id)"
+                            class="mdui-fab mdui-fab-mini mdui-color-theme-accent mdui-ripple">
+                        <i class="mdui-icon material-icons">clear</i>
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            users: [],
+            activeUser: 0,
+        },
+        created() {
+            this.getUsers()
+        },
+        methods: {
+            getUsers() {
+                return httpGet("master/users").then(res => {
+                    if (res.status === "ok") {
+                        this.users = res.data
+                    }
+                })
+            },
+            deleteUser(id) {
+                return httpDelete("master/user", {
+                    id: id
+                }).then(res => {
+                    if (res.status === "ok") {
+                        this.getUsers()
+                    }
+                })
+            }
+        }
+    })
+</script>

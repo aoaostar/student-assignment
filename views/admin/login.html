@@ -1,0 +1,46 @@
+<div class="mdui-container" id="app">
+    <div class="mdui-card auth-panel">
+        <div class="mdui-card-content">
+            <div class="mdui-header">
+                <h4>管理员登录</h4>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">Username</label>
+                <input name="user_id" class="mdui-textfield-input" type="text" v-model="user.username"/>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">Password</label>
+                <input name="password" class="mdui-textfield-input" type="password" v-model="user.password"/>
+            </div>
+            <div class="mdui-m-t-3">
+                <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-btn-block mdui-color-theme-accent"
+                        @click="submit">登录
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            user: {
+                username: "",
+                password: "",
+            }
+        },
+        methods: {
+            submit() {
+                httpPost("auth/admin_login", this.user).then(res => {
+                    if (res.status === "ok") {
+                        setTimeout(()=>{
+                            window.location.href = "/admin"
+                        },800)
+                    }
+                })
+            }
+
+        }
+    })
+</script>

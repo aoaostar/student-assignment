@@ -1,0 +1,54 @@
+{[render "layouts/header.html"]}
+<div class="mdui-container mdui-m-t-2" id="app">
+    <div class="mdui-card ">
+        <div class="mdui-card-content">
+            <div class="mdui-header">
+                <h4>我的资料</h4>
+            </div>
+            <ul class="mdui-list">
+                <li class="mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-blue">card_giftcard</i>
+                    <div class="mdui-list-item-content">学号：{{user.id}}</div>
+                </li>
+                <li class="mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-indigo">account_circle</i>
+                    <div class="mdui-list-item-content">姓名：{{user.username}}</div>
+                </li>
+                <li class="mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-indigo">group</i>
+                    <div class="mdui-list-item-content">班级：{{user.class.name}}</div>
+                </li>
+                <li class="mdui-list-item mdui-ripple">
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-pink">access_alarm</i>
+                    <div class="mdui-list-item-content">注册时间：{{user.created_at}}</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            user: {
+                user_id: null,
+                username: "",
+                class_id: "",
+            }
+        },
+        created(){
+          this.getUserInfo()
+        },
+        methods: {
+            getUserInfo() {
+                httpGet("user").then(res => {
+                    if (res.status === "ok") {
+                        this.user = res.data
+                    }
+                })
+            }
+
+        }
+    })
+</script>

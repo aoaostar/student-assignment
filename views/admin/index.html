@@ -1,0 +1,42 @@
+{[render "layouts/header_admin.html"]}
+<style>
+
+</style>
+<div class="mdui-container mdui-m-t-2" id="app">
+    <div class="mdui-card ">
+        <div class="mdui-card-content mdui-typo">
+            <img style="max-width: 600px" src="/static/images/banner.png" alt="">
+            <h2>
+                欢迎回来，{{user.username}}
+            </h2>
+            <p>
+                今天的作业布置了吗？同学们没事情做了呢
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            user: {
+                username: "",
+                class_id: "",
+            }
+        },
+        created(){
+            this.getUserInfo()
+        },
+        methods: {
+            getUserInfo() {
+                httpGet("master/admin").then(res => {
+                    if (res.status === "ok") {
+                        this.user = res.data
+                    }
+                })
+            }
+
+        }
+    })
+</script>

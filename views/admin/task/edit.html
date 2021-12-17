@@ -1,0 +1,95 @@
+{[render "layouts/header_admin.html"]}
+<style>
+    #file {
+        width: 0;
+        height: 0;
+    }
+</style>
+<div class="mdui-container mdui-typo mdui-m-t-2" id="app">
+    <div class="mdui-card">
+        <div class="mdui-card-content">
+            <h2 class="mdui-m-t-0"># 作业要求</h2>
+            <div>
+                <h3># 标题</h3>
+                <div class="mdui-textfield mdui-m-t-2">
+                    <label class="mdui-textfield-label">作业标题</label>
+                    <input class="mdui-textfield-input" type="text" v-model="task.name"/>
+                </div>
+            </div>
+            <div>
+                <h3># 班级</h3>
+                <select class="mdui-select" v-model="task.class_id">
+                    <option :value="item.id" v-for="item,key in classes" :key="key">{{ item.name }}</option>
+                </select>
+            </div>
+            <div class="mdui-m-t-2">
+                <h3># 截止时间</h3>
+                <div class="mdui-m-t-2 mdui-textfield">
+                    <label class="mdui-textfield-label">作业截止时间</label>
+                    <input class="mdui-textfield-input" type="datetime-local" v-model="task.deadline"/>
+                </div>
+            </div>
+            <div class="mdui-m-t-2">
+                <h3># 内容</h3>
+                <div class="mdui-m-t-2 mdui-textfield">
+                    <label class="mdui-textfield-label">作业要求</label>
+                    <textarea class="mdui-textfield-input" v-model="task.content"></textarea>
+                </div>
+            </div>
+
+            <div class="mdui-m-t-2">
+                <button :disabled="loading" class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent"
+                        @click="submit">保存
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let vm = new Vue({
+        el: "#app",
+        data: {
+            classes: [],
+            task: {
+                id: 0,
+                class_id: 0,
+                name: "",
+                content: "",
+                deadline: "",
+            },
+            loading: false,
+        },
+        created() {
+            this.getClasses()
+            this.getTask('{[.taskId]}')
+        },
+        methods: {
+            getTask(id) {
+                return httpGet("master/task?id=" + id).then(res => {
+                    if (res.status === "ok") {
+                        this.task = res.data
+                        this.task.deadline = this.task.deadline.replace(" ","T")
+                    }
+                })
+            },
+            getClasses() {
+                return httpGet("classes").then(res => {
+                    if (res.status === "ok") {
+                        this.classes = res.data
+                    }
+                })
+            },
+            submit() {
+                this.loading = true
+                let task = Object.assign({}, this.task)
+                task.deadline = format_date(task.deadline)
+                httpPut("master/task", task).finally(() => {
+                    this.loading = false
+                })
+            }
+
+        }
+    })
+</script>

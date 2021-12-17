@@ -1,0 +1,6 @@
+*.zip
+install.lock
+*.exe
+*.bat
+storage/*
+.idea
